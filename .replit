@@ -1,0 +1,94 @@
+modules = ["bash", "python-3.11"]
+
+[nix]
+channel = "stable-24_05"
+packages = ["glibcLocales"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Setup Influencer_kartr"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "setup_workflow"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Run Influencer_kartr"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Run Application"
+
+[[workflows.workflow]]
+name = "Setup Influencer_kartr"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash setup.sh"
+
+[[workflows.workflow]]
+name = "setup_workflow"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "chmod +x setup.sh && ./setup.sh"
+
+[[workflows.workflow]]
+name = "Run Influencer_kartr"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd Influencer_kartr && python main.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Run Application"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "FLASK_APP=main.py python main.py"
+waitForPort = 5000
+
+[deployment]
+run = ["sh", "-c", "bash setup.sh"]
+
+[[ports]]
+localPort = 5000
+externalPort = 80
